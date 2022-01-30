@@ -5,11 +5,10 @@
 
 (def words (strn/split-lines
             (slurp
-             "words.txt")))
+             "resources/words.txt")))
 
 ;; now we have a list of all possible words (12972 long)
-;; start with a word that has the most common letters and nothing repeated, like
-;; aside.
+;; start with a word that has the most common letters and nothing repeated, like aside.
 
 (def letters (into #{} (map char (range 97 (+ 97 26)))))
 
@@ -48,13 +47,20 @@
           (let [tried (first word-list)
                 result (read-line)
                 new-classes (update-classes-with-word-and-result classes tried result)
+                required-letters (into [] (filter (complement nil?)
+                                                  (map (fn [letter state]
+                                                         (if (= \1 state) letter nil))
+                                                       tried result)))
+                required-classes (map #(re-pattern (str ".*" % ".*")) required-letters)
                 new-regex-classes (map #(str \[ (strn/join %) \]) new-classes)
                 pattern (re-pattern (strn/join new-regex-classes))
-                new-word-list (filter #(re-find pattern %) word-list)
+                filter-func (fn [word] (every? #(re-find % word) (conj required-classes pattern)))
+                new-word-list (filter filter-func word-list)
                 dist (first (filter (partial apply distinct?) new-word-list))
                 new-tried (or dist (first new-word-list))]
             (if (= result "22222")
               (println "success!")
               (do
                 (println new-tried)
+                (println (strn/join required-letters))
                 (recur new-classes (inc try) new-word-list)))))))
