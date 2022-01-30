@@ -40,17 +40,19 @@
 (defn -main []
   (loop [classes (into [] (repeat 5 letters))
          try 1
-         word-list words]
-    (cond (= try 1) (do (println "align") (recur classes (inc try) word-list))
+         word-list words
+         to-print "align"]
+    
+    (cond (= try 1) (do (println to-print) (recur classes (inc try) word-list to-print))
           (= try 7) nil
           :else
-          (let [tried (first word-list)
+          (let [tried to-print
                 result (read-line)
                 new-classes (update-classes-with-word-and-result classes tried result)
-                required-letters (into [] (filter (complement nil?)
+                required-letters (filter (complement nil?)
                                                   (map (fn [letter state]
                                                          (if (= \1 state) letter nil))
-                                                       tried result)))
+                                                       tried result))
                 required-classes (map #(re-pattern (str ".*" % ".*")) required-letters)
                 new-regex-classes (map #(str \[ (strn/join %) \]) new-classes)
                 pattern (re-pattern (strn/join new-regex-classes))
@@ -62,5 +64,4 @@
               (println "success!")
               (do
                 (println new-tried)
-                (println (strn/join required-letters))
-                (recur new-classes (inc try) new-word-list)))))))
+                (recur new-classes (inc try) new-word-list new-tried)))))))
