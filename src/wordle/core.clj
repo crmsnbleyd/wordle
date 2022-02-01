@@ -43,11 +43,11 @@
          word-list words
          to-print "align"]
     
-    (cond (= try 1) (do (println to-print) (recur classes (inc try) word-list to-print))
+    (cond (= try 1) (recur classes (inc try) word-list to-print)
           (= try 7) nil
           :else
           (let [eff to-print
-                tried (do (println eff) (println "do you want to enter a different word? y/n")
+                tried (do (println eff) (print "do you want to enter a different word? y/n ") (flush)
                           (if (= (read-line) "y") (read-line) eff))
                 result (do (println "enter encoded result") (read-line))
                 new-classes (update-classes-with-word-and-result classes tried result)
@@ -62,6 +62,8 @@
                 new-word-list (filter filter-func word-list)
                 dist (first (filter (partial apply distinct?) new-word-list))
                 new-tried (or dist (first new-word-list))]
-            (if (= result "22222")
-              (println "success!")
-              (recur new-classes (inc try) new-word-list new-tried))))))
+            (cond 
+              (= result "22222") (println "success!")
+              (= nil new-tried) ((println "no words left that match :(")
+                                 (System/exit 0))
+              :else (recur new-classes (inc try) new-word-list new-tried))))))
