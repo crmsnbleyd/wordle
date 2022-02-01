@@ -1,6 +1,7 @@
 (ns wordle.core
   (:gen-class)
   (:require [clojure.string :as strn]
+            [clojure.tools.cli :refer [parse-opts]]
             [clojure.set :refer [difference]]))
 
 (def words "12972 member list of all possible words"
@@ -72,13 +73,16 @@
    (first (filter (partial apply distinct?) word-list))
    (first word-list)))
 
-(defn -main []
+(defn solve-wordle
+  "main function used when no -h flag"
+  []
   (loop [classes (init-classes)
          try 2
          word-list words
-         to-print (do (print "enter starting word, ex. aside: ")
-                      (flush)
-                      (strn/trim (read-line)))]
+         to-print (do
+                    (print "enter starting word, ex. aside: ")
+                    (flush)
+                    (strn/trim (read-line)))]
 
     (let [eff to-print
           tried (do (printf "the chosen word is: %s\n" eff)
@@ -101,3 +105,23 @@
         (= nil new-tried) ((println "no words left that match :(")
                            (System/exit 0))
         :else (recur new-classes (inc try) new-word-list new-tried)))))
+
+(def help-message
+  "This program is a wordle solver.
+Enter only 5 letter words.
+When the program asks for encoded result,
+use the color-coded output from wordle and
+convert it to a number. 
+Grey letters are represented as 0, 
+yellow as 1 and green as 2. 
+For example, Grey Grey Yellow Yellow Green is represented as 000112.
+
+The program will repeat until you get a 
+winning state (represented as 22222) 
+or it runs out of words to use (i.e there are no words 
+that correspond to the previous inputs)")
+
+(defn -main [& args]
+  (if (get-in (parse-opts args [["-h" "--help"]]) [:options :help])
+    (println help-message)
+    (solve-wordle)))

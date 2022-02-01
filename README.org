@@ -1,9 +1,12 @@
-#+title: A Wordle Solver
+#+title: Wordle Solver
 #+author: Arnav Andrew Jose
+* Usage
+  In the program, there is a reference to 'encoded result', which means the colours returned from wordle translated to numbers. A 0 is gray, a 1 is yellow, and a 2 is green. For example, if your letters are Grey, Yellow, Yellow, Grey, and Green respectively, you must enter 01102. Entering 22222, which indicates a winning word, ends the program immediately.
 * Instructions
+  The following are commands that can be run in the cloned github directory to run the tool. You can also use the ~--help~ or ~-h~ flags to get a help message similar to the text in the _Usage_ section.
 ** Using Java Runtime Environment
    ~java -jar wordle.jar~
-** Using Leiningem
+** Using Leiningen
    ~lein run~
 ** Using clj or clojure command line programs
    ~clj -M -m wordle.core~
