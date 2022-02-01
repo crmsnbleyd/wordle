@@ -46,8 +46,10 @@
     (cond (= try 1) (do (println to-print) (recur classes (inc try) word-list to-print))
           (= try 7) nil
           :else
-          (let [tried to-print
-                result (read-line)
+          (let [eff to-print
+                tried (do (println eff) (println "do you want to enter a different word? y/n")
+                          (if (= (read-line) "y") (read-line) eff))
+                result (do (println "enter encoded result") (read-line))
                 new-classes (update-classes-with-word-and-result classes tried result)
                 required-letters (filter (complement nil?)
                                                   (map (fn [letter state]
@@ -62,6 +64,4 @@
                 new-tried (or dist (first new-word-list))]
             (if (= result "22222")
               (println "success!")
-              (do
-                (println new-tried)
-                (recur new-classes (inc try) new-word-list new-tried)))))))
+              (recur new-classes (inc try) new-word-list new-tried))))))
