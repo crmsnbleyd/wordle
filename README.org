@@ -1,0 +1,11 @@
+#+title: A Wordle Solver
+#+author: Arnav Andrew Jose
+* Instructions
+** Using Java Runtime Environment
+   ~java -jar wordle.jar~
+** Using Leiningem
+   ~lein run~
+** Using clj or clojure command line programs
+   ~clj -M -m wordle.core~
+* Resources
+[[https://github.com/tabatkins/wordle-list][Source for word database used in this program]]
