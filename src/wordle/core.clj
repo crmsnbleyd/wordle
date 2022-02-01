@@ -73,6 +73,24 @@
    (first (filter (partial apply distinct?) word-list))
    (first word-list)))
 
+(defn read-wordle-thing
+  "reads a valid 5 letter wordle word or encoded result"
+  [word?]
+  (let [regex-validator (re-pattern (if word? "[a-z]{5}" "[0-2]{5}"))
+        invalid-print
+        (if word?
+          "all characters should be small letters"
+          "all characters should be either 0, 1, or 2")
+        word (strn/trim (read-line))]
+    (cond
+      (not= 5 (count word))
+      ((println "input is too short!")
+       (System/exit 1))
+      (not (re-matches regex-validator word))
+      ((println invalid-print)
+       (System/exit 1))
+      :else word)))
+
 (defn solve-wordle
   "main function used when no -h flag"
   []
@@ -82,16 +100,19 @@
          to-print (do
                     (print "enter starting word, ex. aside: ")
                     (flush)
-                    (strn/trim (read-line)))]
+                    (read-wordle-thing true))]
 
     (let [eff to-print
           tried (do (printf "the chosen word is: %s\n" eff)
                     (print "do you want to enter a different word?(y/n): ")
                     (flush)
                     (if (= (strn/trim (read-line)) "y")
-                      (read-line)
+                      (do (print "enter word: ") (flush) (read-wordle-thing true))
                       eff))
-          result (do (print "enter encoded result from wordle: ") (flush) (read-line))
+          result (do
+                   (print "enter encoded result from wordle: ")
+                   (flush)
+                   (read-wordle-thing false))
           new-classes (update-classes-with-word-and-result classes tried result)
           required-letters (yellow-letters tried result)
           pattern-vector (make-patterns-vector required-letters new-classes)
